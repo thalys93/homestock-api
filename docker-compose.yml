@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  postgres-docker:
+    image: postgres
+    restart: always
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: root
+        POSTGRES_DB: homestock-alpha
+    ports:
+    - "5432:5432"
+
+#futuramente será adicionado o container da api vou deixar comentado aqui
+  # home_stock-api:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: home_stock_api
+  #   environment:
+  #     - JWT_SECRET_KEY={gerar-aqui}
+  #     - DB_USERNAME=postgres
+  #     - DB_PASSWORD=root
+  #     - DB_PORT=5432
+  #     - DB_HOST=postgres-docker
+  #     - DB_DATABASE=home_stock
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./src:/app/src
+  #   depends_on:
+  #     - postgres-docker
+  #   command: ["sh", "-c", "sleep 10 && npm start"]
+
+      
