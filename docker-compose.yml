@@ -27,4 +27,4 @@ services:
       - ./src:/app/src
     depends_on:
       - postgres-docker
-    command: [ "sh", "-c", "sleep 10 && npm start:dev" ]
+    command: [ "sh", "-c", "sleep 10 && npm start" ]

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Category } from 'src/category/entities/category.entity';
 import { Categories } from 'src/enums/Categories';
 import { Roles } from 'src/enums/Roles';
@@ -8,12 +8,17 @@ import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class SeddingService {
+export class SeddingService implements OnModuleInit {
     private readonly logger = new Logger(SeddingService.name)
 
     constructor(
         private readonly dataSource: DataSource,
     ) { }
+
+    async onModuleInit() {
+        await this.createRoles();
+        await this.createCategories();
+    }
 
     async clearDB() {
         const queryRunner = this.dataSource.createQueryRunner();
