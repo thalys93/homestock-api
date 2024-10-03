@@ -1,5 +1,5 @@
 import { UserAddress } from "src/user-address/entities/user-address.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Expense {
@@ -28,6 +28,7 @@ export class Expense {
     frequency: string;  // Periodicidade (mensal, semanal, diária)
 
     @ManyToOne(() => UserAddress, userAddress => userAddress.expenses, { nullable: true })
+    @JoinColumn({ name: "user_address_id" })
     userAddress: UserAddress;
 
     @Column({ nullable: false })

@@ -7,4 +7,5 @@ export class CreateExpenseDto {
     category: string;
     frequency: string;
     reminder: boolean;
+    user_address_id: string;
 }

@@ -62,7 +62,7 @@ export class UserAddressService {
 
   async findOne(id: string) {
     this.logger.warn("Iniciando Busca de Endereços..")
-    const userAddress = await this.userAddressRepository.findOne({ where: { id }, relations: ['address'] })
+    const userAddress = await this.userAddressRepository.findOne({ where: { id }, relations: ['address', 'products', 'expenses'] })
     if (!userAddress) {
       this.logger.error("Endereço Não Encontrado!")
       return { message: "Endereço não encontrado" }

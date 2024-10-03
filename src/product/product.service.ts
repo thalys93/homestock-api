@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { CategoryService } from 'src/category/category.service';
 import { Category } from 'src/category/entities/category.entity';
+import { UserAddressService } from 'src/user-address/user-address.service';
 
 @Injectable()
 export class ProductService {
@@ -15,7 +16,11 @@ export class ProductService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     
-    private readonly categoryService: CategoryService
+    @Inject(forwardRef(() => CategoryService))
+    private readonly categoryService: CategoryService,
+
+    @Inject(forwardRef(() => UserAddressService))
+    private readonly userAdressService: UserAddressService
   ) { }
 
   async create(createProductDto: CreateProductDto) {
@@ -28,6 +33,11 @@ export class ProductService {
     if (createProductDto.category && !createProductDto.category_id) {
       this.logger.log("Cadastrando Categoria..")
       const category = await this.categoryService.create(createProductDto.category)
+      const userAddressResult = await this.userAdressService.findOne(createProductDto.user_address_id)
+      if (!userAddressResult) {
+        throw new NotFoundException("Endereço não encontrado")
+      }
+      product.userAddress = userAddressResult.found
       product.category = category.category;
       await this.productRepository.save(product)      
       this.logger.log("Cadastro de Produtos Concluido")
@@ -40,8 +50,12 @@ export class ProductService {
       const category = await this.categoryService.findOne(createProductDto.category_id)
       this.logger.log("Categoria econtrada, prosseguindo")
       product.category = category.found
-    } 
-
+    }
+      const userAddressResult = await this.userAdressService.findOne(createProductDto.user_address_id)
+      if(!userAddressResult) {
+        throw new NotFoundException("Endereço não encontrado")
+      }      
+      product.userAddress = userAddressResult.found
       await this.productRepository.save(product);
       this.logger.log("Cadastro de Produtos Concluido")
       return {
