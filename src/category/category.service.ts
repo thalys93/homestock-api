@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,52 +8,65 @@ import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CategoryService {
+  private logger = new Logger(CategoryService.name)
+
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
   ) { }
 
-  async paginate(options: IPaginationOptions, ) {
-    const queryBuilder = this.categoryRepository.createQueryBuilder('cat');
-    queryBuilder.orderBy('cat.category_name', "DESC");
-
-    return paginate<Category>(queryBuilder, options);
-  }
-
   async create(createCategoryDto: CreateCategoryDto) {
+    this.logger.warn("Iniciando Cadastro de Categorias..")
     const category = this.categoryRepository.create(createCategoryDto);
-    await this.categoryRepository.save(category)
-
-    return { message: "Categoria Criada com Sucesso! ", category }
+    await this.categoryRepository.save(category);
+    this.logger.log("Cadastro de Categorias Concluido")
+    return { message: "Categoria Cadastrada com sucesso", category };
   }
-  
+
+  async paginate(options: IPaginationOptions) {
+    this.logger.warn("Iniciando Paginação..")
+    const queryBuilder = this.categoryRepository.createQueryBuilder('category')
+
+    // ! Não usar pois pode impactar a perfomace no futuro
+    // queryBuilder.leftJoinAndSelect('category.products', 'products')
+    queryBuilder.orderBy('category.id', "DESC")
+    this.logger.log("Paginação Concluida")
+    return paginate<Category>(queryBuilder, options)
+  }
+
   async findOne(id: number) {
-    const cat = await this.categoryRepository.findOne({ where: { id } })
-    if (!cat) {
-      throw new NotFoundException("Categoria não Encontrada")
-    } else {
-      return { found: cat }
+    this.logger.warn("Iniciando Busca de Categorias..")
+    const category = await this.categoryRepository.findOne({ where: { id } })
+    if(!category) {
+      this.logger.error("Categoria Não Encontrada!")
+      return { message: "Categoria não encontrada" }
     }
+    this.logger.log("Busca de Categorias Concluida")
+    return { found: category }
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const cat = await this.categoryRepository.findOne({ where: { id } });
-    if (!cat) {
-      throw new NotFoundException("Categoria não Encontrada")
-    } else {
-      Object.assign(cat, updateCategoryDto);
+    this.logger.warn("Iniciando Atualização de Categorias..")
+    const category = await this.categoryRepository.findOne({ where: { id } })
+    if(!category) {
+      this.logger.error("Categoria Não Encontrada!")
+      return { message: "Categoria não encontrada" }
     }
-    await this.categoryRepository.update(id, cat)
-    return { message: "Categoria Atualizada com Sucesso!", cat }
+    Object.assign(category, updateCategoryDto)
+    await this.categoryRepository.save(category)
+    this.logger.log("Atualização de Categorias Concluída")
+    return { message: "Categoria Atualizada com sucesso", category }
   }
 
   async remove(id: number) {
-    const cat = await this.categoryRepository.findOne({ where: { id } });
-    if (!cat) {
-      throw new NotFoundException("Categoria não Encontrada")
-    } else {
-      await this.categoryRepository.delete(id)
-      return { message: `Categoria com o ID ${id} removida com Sucesso!` }
+    this.logger.warn("Iniciando Remoção de Categorias..")
+    const category = await this.categoryRepository.findOne({ where: { id } })
+    if(!category) {
+      this.logger.error("Categoria Não Encontrada!")
+      return { message: "Categoria não encontrada" }
     }
+    await this.categoryRepository.delete(id)
+    this.logger.log("Remoção de Categorias Concluida")
+    return { message: "Categoria Removida com sucesso" }
   }
 }

@@ -6,8 +6,8 @@ import { RolesGuard } from 'src/security/roles.guard';
 import { RolesDecorator } from 'src/security/roles.decorator';
 import { ADMIN_DEVELOPER_ROLES, ADMIN_ROLES } from 'src/enums/role-groups';
 
-@ApiTags("Seeding module Protected")
-@Controller('api/system/utils/sedding')
+@ApiTags("Seeding Routes Protected")
+@Controller('system/utils/sedding')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class SeddingControllerProtected {
     constructor(private readonly seddingService: SeddingService) { }

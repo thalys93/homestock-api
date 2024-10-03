@@ -15,7 +15,7 @@ export class RolesService {
 
   async paginate(options: IPaginationOptions,) {
     const queryBuilder = this.roleRepository.createQueryBuilder('rol');
-    queryBuilder.orderBy('rol.role_name', "DESC");
+    queryBuilder.orderBy('rol.name', "DESC");
 
     return paginate<Role>(queryBuilder, options);
   }

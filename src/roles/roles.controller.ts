@@ -10,40 +10,40 @@ import { RolesDecorator } from 'src/security/roles.decorator';
 import { Roles } from 'src/enums/Roles';
 import { ADMIN_ROLES, USER_TESTER_ROLES } from 'src/enums/role-groups';
 
-@ApiTags("User Roles Module Protected")
-@Controller('api/security/roles/admin')
+@ApiTags("User Roles Routes Protected")
+@Controller('security/roles/admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class RolesControllerProtected {
   constructor(private readonly rolesService: RolesService) {}
 
   @RolesDecorator(...ADMIN_ROLES)
-  @Post(`/${Methods.NEW}`)
+  @Post(`${Methods.CREATE}`)
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
   
 
   @RolesDecorator(...ADMIN_ROLES )
-  @Patch(`/${Methods.UPDATE}/:id`)
+  @Patch(`${Methods.UPDATE}/:id`)
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.rolesService.update(+id, updateRoleDto);
   }
 
   @RolesDecorator(...ADMIN_ROLES)
-  @Delete(`/${Methods.DELETE}/:id`)
+  @Delete(`${Methods.DELETE}/:id`)
   remove(@Param('id') id: string) {
     return this.rolesService.remove(+id);
   }
 }
 
-@ApiTags("User Roles Module Unprotected")
-@Controller('api/security/roles')
+@ApiTags("User Roles Routes Unprotected")
+@Controller('security/roles')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class RolesControllerUnprotected{
   constructor(private readonly rolesService: RolesService) { }
 
   @RolesDecorator(...USER_TESTER_ROLES)
-  @Get(`/${Methods.ALL}`)
+  @Get(`${Methods.PAGINATE}`)
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
@@ -57,7 +57,7 @@ export class RolesControllerUnprotected{
   }
 
   @RolesDecorator(...USER_TESTER_ROLES)
-  @Get(`/${Methods.FIND}/:id`)
+  @Get(`${Methods.FIND}/:id`)
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(+id);
   }

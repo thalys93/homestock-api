@@ -1,7 +1,7 @@
-export enum Methods {
-    ALL = "all",
+export enum Methods {    
     FIND = "find",
-    NEW = "new",
+    PAGINATE = "paginate",
+    CREATE = "create",
     UPDATE = "update",
     DELETE = "delete"
 }
