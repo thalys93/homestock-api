@@ -1,8 +1,8 @@
 {
   "name": "homestock-api",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0.0",
+  "description": "Api do homestock",
+  "author": "Thalys93",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
