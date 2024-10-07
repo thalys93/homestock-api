@@ -1,5 +1,5 @@
 import { AuthGuard } from '@nestjs/passport';
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { SeddingService } from './sedding.service';
 import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from 'src/security/roles.guard';
@@ -14,18 +14,21 @@ export class SeddingControllerProtected {
 
     @RolesDecorator(...ADMIN_ROLES)
     @Post('clear-database')
+    @HttpCode(202)
     clearDatabase() {
         return this.seddingService.clearDB();
     }
 
     @RolesDecorator(...ADMIN_DEVELOPER_ROLES)
     @Post('create-roles')
+    @HttpCode(201)
     createRoles() {
         return this.seddingService.createRoles();
     }
 
     @RolesDecorator(...ADMIN_DEVELOPER_ROLES)
     @Post("create-categories")
+    @HttpCode(201)
     createCategories() {
         return this.seddingService.createCategories();
     }

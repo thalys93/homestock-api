@@ -5,7 +5,6 @@ import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserAddress } from './entities/user-address.entity';
-import { Address } from 'src/address/entities/address.entity';
 import { AddressService } from 'src/address/address.service';
 import { UserService } from 'src/user/user.service';
 
@@ -65,7 +64,7 @@ export class UserAddressService {
     const userAddress = await this.userAddressRepository.findOne({ where: { id }, relations: ['address', 'products', 'expenses'] })
     if (!userAddress) {
       this.logger.error("Endereço Não Encontrado!")
-      return { message: "Endereço não encontrado" }
+      throw new NotFoundException("Endereço não encontrado")
     }
     this.logger.log("Busca de Endereços Concluída")
     return { found: userAddress }
@@ -99,7 +98,7 @@ export class UserAddressService {
     const userAddress = await this.userAddressRepository.findOne({ where: { id } })
     if (!userAddress) {
       this.logger.error("Endereço Não Encontrado!")
-      return { message: "Endereço não encontrado" }
+      throw new NotFoundException("Endereço não encontrado")
     }
     this.logger.log("Atualização de Endereços Concluída")
     Object.assign(userAddress, updateUserAddressDto)
@@ -112,7 +111,7 @@ export class UserAddressService {
     const userAddress = await this.userAddressRepository.findOne({ where: { id } })
     if (!userAddress) {
       this.logger.error("Endereço Não Encontrado!")
-      return { message: "Endereço não encontrado" }
+      throw new NotFoundException("Endereço não encontrado")
     }
     this.logger.log("Remoção de Endereços Concluída")
     await this.userAddressRepository.delete(id)

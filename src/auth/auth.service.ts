@@ -13,7 +13,7 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
     ) { }
-
+    
     async login(user: User, Login: loginDto) {
         this.logger.log("Realizando Login...");
         if (!user.role) {
@@ -28,10 +28,9 @@ export class AuthService {
             role: user.role.name,
         };
 
-        this.logger.log("Login realizado com sucesso!!");
+        this.logger.log("Login realizado com sucesso!!");        
         return {
-            token: this.jwtService.sign(payload),
-            statusCode: 200,
+            token: this.jwtService.sign(payload),            
             userData: {
                 id: user.id,
                 email: Login.email,
@@ -39,7 +38,6 @@ export class AuthService {
             },
         };
     }
-
     async validateUser(email: string, password: string) {
         let user: any;
         this.logger.log("Validando Usuário...")

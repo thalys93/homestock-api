@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,10 +25,7 @@ export class CategoryService {
 
   async paginate(options: IPaginationOptions) {
     this.logger.warn("Iniciando Paginação..")
-    const queryBuilder = this.categoryRepository.createQueryBuilder('category')
-
-    // ! Não usar pois pode impactar a perfomace no futuro
-    // queryBuilder.leftJoinAndSelect('category.products', 'products')
+    const queryBuilder = this.categoryRepository.createQueryBuilder('category')    
     queryBuilder.orderBy('category.id', "DESC")
     this.logger.log("Paginação Concluida")
     return paginate<Category>(queryBuilder, options)
@@ -39,7 +36,7 @@ export class CategoryService {
     const category = await this.categoryRepository.findOne({ where: { id } })
     if(!category) {
       this.logger.error("Categoria Não Encontrada!")
-      return { message: "Categoria não encontrada" }
+      throw new NotFoundException("Categoria não encontrada")
     }
     this.logger.log("Busca de Categorias Concluida")
     return { found: category }
@@ -50,7 +47,7 @@ export class CategoryService {
     const category = await this.categoryRepository.findOne({ where: { id } })
     if(!category) {
       this.logger.error("Categoria Não Encontrada!")
-      return { message: "Categoria não encontrada" }
+      throw new NotFoundException("Categoria não encontrada")
     }
     Object.assign(category, updateCategoryDto)
     await this.categoryRepository.save(category)
@@ -63,7 +60,7 @@ export class CategoryService {
     const category = await this.categoryRepository.findOne({ where: { id } })
     if(!category) {
       this.logger.error("Categoria Não Encontrada!")
-      return { message: "Categoria não encontrada" }
+      throw new NotFoundException("Categoria não encontrada")
     }
     await this.categoryRepository.delete(id)
     this.logger.log("Remoção de Categorias Concluida")

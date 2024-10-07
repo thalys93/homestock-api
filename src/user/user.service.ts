@@ -1,6 +1,6 @@
 import { Role } from 'src/roles/entities/role.entity';
 import { Roles } from 'src/enums/Roles';
-import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { forwardRef, HttpCode, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,7 +37,7 @@ export class UserService {
   async getUserAddresses(userId: string) {
     const userAddreses = await this.userAddressService.findUserID(userId);
     if (!userAddreses) {
-      throw new Error(`Usuário não encontrado`);
+      throw new NotFoundException(`Endereços de Usuário não encontrados`);
     }
     return userAddreses.found;
   }
@@ -54,14 +54,13 @@ export class UserService {
 
       if (!defaultRole) {
         this.logger.error("Role padrão 'User' não encontrado no banco de dados.");
-        throw new Error("Role padrão 'User' não encontrado.");
+        throw new NotFoundException("Role padrão 'User' não encontrado.");
       }
-
 
       const defaultUser = this.usersRepository.create({ ...createUserDto, role: defaultRole });
       await this.usersRepository.save(defaultUser);
-
-      return { message: "Usuário criado com role padrão!", defaultUser };
+      
+      return { message: "Usuário criado com role padrão!", defaultUser,  };
     }
 
     this.logger.debug("Usuário com Cargo Detectado, Criando..")
@@ -84,7 +83,7 @@ export class UserService {
   async findOne(id: string) {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
-      return new NotFoundException("Nenhum Usuário Encontrado")
+      throw new NotFoundException("Nenhum Usuário Encontrado")
     } else {
       return { found: user };
     }
@@ -97,7 +96,7 @@ export class UserService {
     });
 
     if (!user) {
-      return new NotFoundException("Nenhum Usuário Encontrado")
+      throw new NotFoundException("Nenhum Usuário Encontrado")
     } else {
       const addresses = await this.getUserAddresses(id)
 
@@ -116,7 +115,7 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
-      return new NotFoundException("Usuário Não Encontrado")
+      throw new NotFoundException("Usuário Não Encontrado")
     } else {
       Object.assign(user, updateUserDto);
     }
@@ -127,7 +126,7 @@ export class UserService {
   async updateToken(id: string, token: string) {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
-      return new NotFoundException("Usuário Não Encontrado")
+      throw new NotFoundException("Usuário Não Encontrado")
     } else {
       user.recoverToken = token;
       await this.usersRepository.update(id, user);
@@ -138,7 +137,7 @@ export class UserService {
   async remove(id: string) {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
-      return new NotFoundException("Usuário Não Encontrado")
+      throw new NotFoundException("Usuário Não Encontrado")
     } else {
       await this.usersRepository.delete(id);
       return { message: `Usuário foi deletado com sucesso!`, userID: id };

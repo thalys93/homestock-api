@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,7 +20,7 @@ export class UserProfileService {
     const userProfile = await this.userProfileRepository.findOne({ where: { id }});
     if (!userProfile) {
       this.logger.error("Perfil de Usuário nao encontrado!")
-      return { message: "Perfil de Usuário não encontrada" };
+      throw new NotFoundException("Perfil de Usuário não encontrado");
     } else {
       this.logger.debug("Perfil de Usuário encontrado!")
       return { found: userProfile };
@@ -32,7 +32,7 @@ export class UserProfileService {
     const userProfile = await this.userProfileRepository.findOne({ where: { id }});
     if (!userProfile) {
       this.logger.error("Perfil de Usuário não encontrado!")
-      return { message: "Perfil de Usuário não encontrada" };
+      throw new NotFoundException("Perfil de Usuário não encontrado");
     } else {
       this.logger.debug("Perfil de Usuário encontrado!")
       Object.assign(userProfile, updateUserProfileDto);

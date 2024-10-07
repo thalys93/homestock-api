@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, DefaultValuePipe, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, DefaultValuePipe, ParseIntPipe, Query, HttpCode } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -17,6 +17,7 @@ export class UserControllerProtected {
   
   @RolesDecorator(...INFRA_ROLES)
   @Get(`/${Methods.PAGINATE}`)
+  @HttpCode(200)
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
@@ -29,32 +30,23 @@ export class UserControllerProtected {
   }
   
   @RolesDecorator(...USER_TESTER_ROLES, ...INFRA_ROLES)
-  @Get(`${Methods.FIND}/:id`)
+  @Get(`${Methods.FIND}/:id`)  
+  @HttpCode(200)
   findOne(@Param('id') id: string) {
     return this.usersService.findOneAndGetAddress(id);
   } 
 
   @RolesDecorator(...INFRA_ROLES)
   @Patch(`${Methods.UPDATE}/:id`)
+  @HttpCode(202)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
-  }
-
-  @RolesDecorator(...USER_TESTER_ROLES, ...INFRA_ROLES)
-  @Patch(`${Methods.UPDATE}/me/:id`)
-  updateMe(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }
+  }  
 
   @RolesDecorator(...INFRA_ROLES)
   @Delete(`${Methods.DELETE}/:id`)
+  @HttpCode(202)
   remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
-  }
-
-  @RolesDecorator(...USER_TESTER_ROLES, ...INFRA_ROLES)
-  @Delete(`${Methods.DELETE}/me/:id`)
-  removeMe(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 }
@@ -65,6 +57,7 @@ export class UserControllerUnprotected {
   constructor(private readonly usersService: UserService) { }
 
   @Post(`/${Methods.CREATE}`)
+  @HttpCode(201)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
