@@ -13,7 +13,7 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
     ) { }
-    
+
     async login(user: User, Login: loginDto) {
         this.logger.log("Realizando Login...");
         if (!user.role) {
@@ -28,9 +28,9 @@ export class AuthService {
             role: user.role.name,
         };
 
-        this.logger.log("Login realizado com sucesso!!");        
+        this.logger.log("Login realizado com sucesso!!");
         return {
-            token: this.jwtService.sign(payload),            
+            token: this.jwtService.sign(payload),
             userData: {
                 id: user.id,
                 email: Login.email,
@@ -59,7 +59,7 @@ export class AuthService {
         this.logger.log("Verificando Token...");
         if (user.recoverToken === token) {
             this.logger.log("Token Valido");
-            return { message: "Token válido", statusCode: 200 };            
+            return { message: "Token válido", statusCode: 200 };
         } else {
             this.logger.log("Token Inválido");
             return new HttpException({ message: "Token inválido" }, 401);

@@ -87,7 +87,7 @@ export class UserAddressService {
     const userAddresseFiltered = user.map(user => ({
       id: user.id,
       nickname: user.nickname,
-      adress: user.address
+      address: user.address
     }))
     return { found: userAddresseFiltered }
   }

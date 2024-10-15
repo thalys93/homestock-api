@@ -12,7 +12,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: home_stock_api
+    container_name: backend_api
     environment:
       - JWT_SECRET_KEY=bge9eKWCRB4DkCjjrDYI7ND2v1je5R3hH2V1f8jGac
       - DB_USERNAME=postgres
